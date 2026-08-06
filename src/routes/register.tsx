@@ -74,7 +74,7 @@ function RegisterPage() {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
 
   const form = useForm<RegistrationInput>({
-    resolver: zodResolver(registrationSchema),
+    resolver: zodResolver(registrationSchema) as never,
     defaultValues: {
       fullName: "",
       institution: "",
@@ -145,7 +145,7 @@ function RegisterPage() {
 
       <section className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
         <Reveal>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="glass rounded-3xl p-7 sm:p-10">
+          <form onSubmit={form.handleSubmit(onSubmit as never)} className="glass rounded-3xl p-7 sm:p-10">
             <FormSection title="Personal details" step="01">
               <Field label="Full name" error={form.formState.errors.fullName?.message}>
                 <Input {...form.register("fullName")} placeholder="Your full name" />
@@ -373,9 +373,9 @@ function Field({
   children,
 }: {
   label: string;
-  error?: string;
-  hint?: string;
-  full?: boolean;
+  error?: string | undefined;
+  hint?: string | undefined;
+  full?: boolean | undefined;
   children: React.ReactNode;
 }) {
   return (

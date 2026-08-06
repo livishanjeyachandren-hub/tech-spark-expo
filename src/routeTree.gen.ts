@@ -14,6 +14,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ScheduleRouteImport } from './routes/schedule'
 
 const IndexRoute = IndexRouteImport.update({
@@ -41,6 +42,11 @@ const GalleryRoute = GalleryRouteImport.update({
   path: '/gallery',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ScheduleRoute = ScheduleRouteImport.update({
   id: '/schedule',
   path: '/schedule',
@@ -53,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/categories': typeof CategoriesRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
+  '/register': typeof RegisterRoute
   '/schedule': typeof ScheduleRoute
 }
 export interface FileRoutesByTo {
@@ -61,6 +68,7 @@ export interface FileRoutesByTo {
   '/categories': typeof CategoriesRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
+  '/register': typeof RegisterRoute
   '/schedule': typeof ScheduleRoute
 }
 export interface FileRoutesById {
@@ -70,14 +78,28 @@ export interface FileRoutesById {
   '/categories': typeof CategoriesRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
+  '/register': typeof RegisterRoute
   '/schedule': typeof ScheduleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/about' | '/categories' | '/contact' | '/gallery' | '/schedule'
+    | '/'
+    | '/about'
+    | '/categories'
+    | '/contact'
+    | '/gallery'
+    | '/register'
+    | '/schedule'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/categories' | '/contact' | '/gallery' | '/schedule'
+  to:
+    | '/'
+    | '/about'
+    | '/categories'
+    | '/contact'
+    | '/gallery'
+    | '/register'
+    | '/schedule'
   id:
     | '__root__'
     | '/'
@@ -85,6 +107,7 @@ export interface FileRouteTypes {
     | '/categories'
     | '/contact'
     | '/gallery'
+    | '/register'
     | '/schedule'
   fileRoutesById: FileRoutesById
 }
@@ -94,6 +117,7 @@ export interface RootRouteChildren {
   CategoriesRoute: typeof CategoriesRoute
   ContactRoute: typeof ContactRoute
   GalleryRoute: typeof GalleryRoute
+  RegisterRoute: typeof RegisterRoute
   ScheduleRoute: typeof ScheduleRoute
 }
 
@@ -134,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GalleryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/schedule': {
       id: '/schedule'
       path: '/schedule'
@@ -150,6 +181,7 @@ const rootRouteChildren: RootRouteChildren = {
   CategoriesRoute: CategoriesRoute,
   ContactRoute: ContactRoute,
   GalleryRoute: GalleryRoute,
+  RegisterRoute: RegisterRoute,
   ScheduleRoute: ScheduleRoute,
 }
 export const routeTree = rootRouteImport
