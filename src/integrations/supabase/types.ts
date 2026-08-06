@@ -14,16 +14,167 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      registrations: {
+        Row: {
+          abstract_pdf_path: string | null
+          category: string
+          checked_in_at: string | null
+          created_at: string
+          department: string | null
+          domain: string
+          email: string
+          faculty: string | null
+          full_name: string
+          id: string
+          institution: string
+          participation_type: string
+          phone: string
+          profile_photo_path: string | null
+          project_abstract: string | null
+          project_title: string
+          registration_id: string | null
+          status: string
+          student_id: string | null
+          team_members: Json
+          team_name: string | null
+          track: string
+          updated_at: string
+        }
+        Insert: {
+          abstract_pdf_path?: string | null
+          category: string
+          checked_in_at?: string | null
+          created_at?: string
+          department?: string | null
+          domain: string
+          email: string
+          faculty?: string | null
+          full_name: string
+          id?: string
+          institution: string
+          participation_type?: string
+          phone: string
+          profile_photo_path?: string | null
+          project_abstract?: string | null
+          project_title: string
+          registration_id?: string | null
+          status?: string
+          student_id?: string | null
+          team_members?: Json
+          team_name?: string | null
+          track: string
+          updated_at?: string
+        }
+        Update: {
+          abstract_pdf_path?: string | null
+          category?: string
+          checked_in_at?: string | null
+          created_at?: string
+          department?: string | null
+          domain?: string
+          email?: string
+          faculty?: string | null
+          full_name?: string
+          id?: string
+          institution?: string
+          participation_type?: string
+          phone?: string
+          profile_photo_path?: string | null
+          project_abstract?: string | null
+          project_title?: string
+          registration_id?: string | null
+          status?: string
+          student_id?: string | null
+          team_members?: Json
+          team_name?: string | null
+          track?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      scores: {
+        Row: {
+          comments: string | null
+          created_at: string
+          id: string
+          impact: number
+          innovation: number
+          judge_id: string
+          presentation: number
+          registration_id: string
+          technical: number
+          updated_at: string
+        }
+        Insert: {
+          comments?: string | null
+          created_at?: string
+          id?: string
+          impact?: number
+          innovation?: number
+          judge_id: string
+          presentation?: number
+          registration_id: string
+          technical?: number
+          updated_at?: string
+        }
+        Update: {
+          comments?: string | null
+          created_at?: string
+          id?: string
+          impact?: number
+          innovation?: number
+          judge_id?: string
+          presentation?: number
+          registration_id?: string
+          technical?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scores_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "judge"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +301,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "judge"],
+    },
   },
 } as const
