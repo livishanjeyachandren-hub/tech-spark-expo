@@ -59,7 +59,11 @@ export const submitRegistration = createServerFn({ method: "POST" })
       .select("registration_id, full_name, email, category, status, created_at")
       .single();
 
-    if (error) throw new Error(error.message);
+    if (error) {
+      // Log details server-side; return a generic message to the browser.
+      console.error("registration insert failed", error);
+      throw new Error("We couldn't save your registration. Please try again.");
+    }
 
     return row;
   });
