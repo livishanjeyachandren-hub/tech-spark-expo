@@ -226,7 +226,7 @@ function RegisterPage() {
                   </SelectContent>
                 </Select>
               </Field>
-              <Field label="Domain">
+              <Field label="Domain" error={form.formState.errors.domain?.message}>
                 <Select
                   value={form.watch("domain")}
                   onValueChange={(v) => form.setValue("domain", v as RegistrationInput["domain"])}
