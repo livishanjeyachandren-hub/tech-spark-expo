@@ -135,8 +135,34 @@ function RegisterPage() {
       }
 
       setReceipt({ ...row, projectTitle: values.projectTitle, qr });
-      toast.success(`Registered — ${row.registration_id}`);
       window.scrollTo({ top: 0, behavior: "smooth" });
+
+      // Notify the committee first, then send the participant their QR pass.
+      const emailData: RegistrationEmailData = {
+        registrationId: row.registration_id ?? "pending",
+        registeredAt: new Date(row.created_at).toLocaleString(),
+        fullName: values.fullName,
+        email: values.email,
+        phone: values.phone,
+        category: values.category,
+        track: values.track,
+        domain: values.domain,
+        projectTitle: values.projectTitle,
+        qrDataUrl: qr,
+      };
+
+      try {
+        await sendAdminRegistrationEmail(emailData);
+        await sendUserVerificationEmail(emailData);
+        toast.success(
+          "Registration completed successfully. A verification email containing your QR code has been sent to your registered email.",
+        );
+      } catch {
+        // Registration is already saved — email delivery is best-effort.
+        toast.warning(
+          `Registered — ${row.registration_id}. We couldn't send the confirmation email; please save your QR code from this page.`,
+        );
+      }
     } catch (err) {
       // Only surface safe, user-friendly messages — never raw server errors.
       const message =
