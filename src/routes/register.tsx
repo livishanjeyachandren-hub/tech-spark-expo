@@ -104,6 +104,7 @@ function RegisterPage() {
   async function onSubmit(values: RegistrationInput) {
     setBusy(true);
     try {
+      // Optional attachments are uploaded first so their paths persist with the row.
       if (abstractFile) {
         values.abstractPdfPath = await uploadFile(abstractFile, "abstracts");
       }
@@ -113,21 +114,36 @@ function RegisterPage() {
 
       const row = await submit({ data: values });
 
-      const qr = await QRCode.toDataURL(
-        JSON.stringify({
-          id: row.registration_id,
-          name: row.full_name,
-          email: row.email,
-          category: row.category,
-        }),
-        { width: 512, margin: 1, color: { dark: "#0b0616", light: "#ffffff" } },
-      );
+      // QR payload agreed with the check-in/email pipeline.
+      let qr = "";
+      try {
+        qr = await QRCode.toDataURL(
+          JSON.stringify({
+            fullname: values.fullName,
+            email: values.email,
+            phone_number: values.phone,
+            category: values.category,
+            track: values.track,
+            domain: values.domain,
+            project_title: values.projectTitle,
+          }),
+          { width: 512, margin: 1, color: { dark: "#0b0616", light: "#ffffff" } },
+        );
+      } catch {
+        // Registration already saved — never fail the flow on QR rendering.
+        toast.warning("Registration saved, but the QR code could not be generated.");
+      }
 
       setReceipt({ ...row, projectTitle: values.projectTitle, qr });
       toast.success(`Registered — ${row.registration_id}`);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Registration failed. Please try again.");
+      // Only surface safe, user-friendly messages — never raw server errors.
+      const message =
+        err instanceof Error && err.message && err.message.length < 200
+          ? err.message
+          : "Registration failed. Please try again.";
+      toast.error(message);
     } finally {
       setBusy(false);
     }
@@ -174,7 +190,7 @@ function RegisterPage() {
             </FormSection>
 
             <FormSection title="Project details" step="02">
-              <Field label="Category">
+              <Field label="Category" error={form.formState.errors.category?.message}>
                 <Select
                   value={form.watch("category")}
                   onValueChange={(v) =>
@@ -193,7 +209,7 @@ function RegisterPage() {
                   </SelectContent>
                 </Select>
               </Field>
-              <Field label="Track">
+              <Field label="Track" error={form.formState.errors.track?.message}>
                 <Select
                   value={form.watch("track")}
                   onValueChange={(v) => form.setValue("track", v as RegistrationInput["track"])}
@@ -210,7 +226,7 @@ function RegisterPage() {
                   </SelectContent>
                 </Select>
               </Field>
-              <Field label="Domain">
+              <Field label="Domain" error={form.formState.errors.domain?.message}>
                 <Select
                   value={form.watch("domain")}
                   onValueChange={(v) => form.setValue("domain", v as RegistrationInput["domain"])}
@@ -440,13 +456,15 @@ function ReceiptView({ receipt }: { receipt: Receipt }) {
               {receipt.registration_id}
             </p>
 
-            <img
-              src={receipt.qr}
-              alt={`QR check-in code for ${receipt.registration_id}`}
-              width={220}
-              height={220}
-              className="mx-auto mt-6 size-52 rounded-xl bg-white p-3"
-            />
+            {receipt.qr ? (
+              <img
+                src={receipt.qr}
+                alt={`QR check-in code for ${receipt.registration_id}`}
+                width={220}
+                height={220}
+                className="mx-auto mt-6 size-52 rounded-xl bg-white p-3"
+              />
+            ) : null}
 
             <dl className="mt-8 space-y-3 text-left text-sm">
               <Row label="Name" value={receipt.full_name} />
@@ -461,11 +479,13 @@ function ReceiptView({ receipt }: { receipt: Receipt }) {
               <Button variant="hero" onClick={() => window.print()}>
                 <Download className="size-4" /> Download receipt
               </Button>
-              <Button asChild variant="glass">
-                <a href={receipt.qr} download={`${receipt.registration_id}-qr.png`}>
-                  Save QR code
-                </a>
-              </Button>
+              {receipt.qr ? (
+                <Button asChild variant="glass">
+                  <a href={receipt.qr} download={`${receipt.registration_id}-qr.png`}>
+                    Save QR code
+                  </a>
+                </Button>
+              ) : null}
             </div>
           </div>
         </Reveal>

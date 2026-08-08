@@ -57,9 +57,6 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
-            <Link to="/login">Sign in</Link>
-          </Button>
           <Button asChild variant="hero" size="sm">
             <Link to="/register">Register</Link>
           </Button>
@@ -77,7 +74,7 @@ export function Navbar() {
       {open ? (
         <div className="glass border-t border-border/60 lg:hidden">
           <div className="mx-auto flex max-w-7xl flex-col px-4 py-3 sm:px-6">
-            {[...NAV_LINKS, { to: "/login", label: "Sign in" }].map((link) => (
+            {NAV_LINKS.map((link) => (
               <Link
                 key={link.to}
                 to={link.to}

@@ -9,7 +9,15 @@ import { registrationSchema, type RegistrationInput } from "./registration-schem
  * registration ID produced by the database trigger.
  */
 export const submitRegistration = createServerFn({ method: "POST" })
-  .inputValidator((data: RegistrationInput) => registrationSchema.parse(data))
+  .inputValidator((data: RegistrationInput) => {
+    // Server-side validation mirrors the client rules; surface a readable message.
+    const parsed = registrationSchema.safeParse(data);
+    if (!parsed.success) {
+      const first = parsed.error.issues[0];
+      throw new Error(first ? `${first.path.join(".")}: ${first.message}` : "Invalid registration details.");
+    }
+    return parsed.data;
+  })
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
@@ -25,6 +33,7 @@ export const submitRegistration = createServerFn({ method: "POST" })
         `This email is already registered (${existing.registration_id ?? "pending"}).`,
       );
     }
+
 
     const { data: row, error } = await supabaseAdmin
       .from("registrations")
@@ -50,7 +59,11 @@ export const submitRegistration = createServerFn({ method: "POST" })
       .select("registration_id, full_name, email, category, status, created_at")
       .single();
 
-    if (error) throw new Error(error.message);
+    if (error) {
+      // Log details server-side; return a generic message to the browser.
+      console.error("registration insert failed", error);
+      throw new Error("We couldn't save your registration. Please try again.");
+    }
 
     return row;
   });

@@ -19,9 +19,13 @@ export const registrationSchema = z.object({
     .min(9, "Enter a valid phone number")
     .max(20)
     .regex(/^[0-9+\-\s()]+$/, "Digits and + - ( ) only"),
-  category: z.enum(["school", "undergraduate", "industrial", "open"]),
-  track: z.enum(["web-mobile", "iot-robotics"]),
-  domain: z.enum(["Agriculture", "Education", "Medical", "Industrial", "Others"]),
+  category: z.enum(["school", "undergraduate", "industrial", "open"], {
+    message: "Please select a category",
+  }),
+  track: z.enum(["web-mobile", "iot-robotics"], { message: "Please select a track" }),
+  domain: z.enum(["Agriculture", "Education", "Medical", "Industrial", "Others"], {
+    message: "Please select a domain",
+  }),
   projectTitle: z.string().trim().min(4, "Give your project a title").max(180),
   projectAbstract: z
     .string()
