@@ -209,7 +209,7 @@ function RegisterPage() {
                   </SelectContent>
                 </Select>
               </Field>
-              <Field label="Track">
+              <Field label="Track" error={form.formState.errors.track?.message}>
                 <Select
                   value={form.watch("track")}
                   onValueChange={(v) => form.setValue("track", v as RegistrationInput["track"])}
