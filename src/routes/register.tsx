@@ -190,7 +190,7 @@ function RegisterPage() {
             </FormSection>
 
             <FormSection title="Project details" step="02">
-              <Field label="Category">
+              <Field label="Category" error={form.formState.errors.category?.message}>
                 <Select
                   value={form.watch("category")}
                   onValueChange={(v) =>
