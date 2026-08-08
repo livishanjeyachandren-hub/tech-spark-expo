@@ -104,6 +104,7 @@ function RegisterPage() {
   async function onSubmit(values: RegistrationInput) {
     setBusy(true);
     try {
+      // Optional attachments are uploaded first so their paths persist with the row.
       if (abstractFile) {
         values.abstractPdfPath = await uploadFile(abstractFile, "abstracts");
       }
@@ -113,21 +114,36 @@ function RegisterPage() {
 
       const row = await submit({ data: values });
 
-      const qr = await QRCode.toDataURL(
-        JSON.stringify({
-          id: row.registration_id,
-          name: row.full_name,
-          email: row.email,
-          category: row.category,
-        }),
-        { width: 512, margin: 1, color: { dark: "#0b0616", light: "#ffffff" } },
-      );
+      // QR payload agreed with the check-in/email pipeline.
+      let qr = "";
+      try {
+        qr = await QRCode.toDataURL(
+          JSON.stringify({
+            fullname: values.fullName,
+            email: values.email,
+            phone_number: values.phone,
+            category: values.category,
+            track: values.track,
+            domain: values.domain,
+            project_title: values.projectTitle,
+          }),
+          { width: 512, margin: 1, color: { dark: "#0b0616", light: "#ffffff" } },
+        );
+      } catch {
+        // Registration already saved — never fail the flow on QR rendering.
+        toast.warning("Registration saved, but the QR code could not be generated.");
+      }
 
       setReceipt({ ...row, projectTitle: values.projectTitle, qr });
       toast.success(`Registered — ${row.registration_id}`);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Registration failed. Please try again.");
+      // Only surface safe, user-friendly messages — never raw server errors.
+      const message =
+        err instanceof Error && err.message && err.message.length < 200
+          ? err.message
+          : "Registration failed. Please try again.";
+      toast.error(message);
     } finally {
       setBusy(false);
     }
