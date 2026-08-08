@@ -479,11 +479,13 @@ function ReceiptView({ receipt }: { receipt: Receipt }) {
               <Button variant="hero" onClick={() => window.print()}>
                 <Download className="size-4" /> Download receipt
               </Button>
-              <Button asChild variant="glass">
-                <a href={receipt.qr} download={`${receipt.registration_id}-qr.png`}>
-                  Save QR code
-                </a>
-              </Button>
+              {receipt.qr ? (
+                <Button asChild variant="glass">
+                  <a href={receipt.qr} download={`${receipt.registration_id}-qr.png`}>
+                    Save QR code
+                  </a>
+                </Button>
+              ) : null}
             </div>
           </div>
         </Reveal>
