@@ -456,13 +456,15 @@ function ReceiptView({ receipt }: { receipt: Receipt }) {
               {receipt.registration_id}
             </p>
 
-            <img
-              src={receipt.qr}
-              alt={`QR check-in code for ${receipt.registration_id}`}
-              width={220}
-              height={220}
-              className="mx-auto mt-6 size-52 rounded-xl bg-white p-3"
-            />
+            {receipt.qr ? (
+              <img
+                src={receipt.qr}
+                alt={`QR check-in code for ${receipt.registration_id}`}
+                width={220}
+                height={220}
+                className="mx-auto mt-6 size-52 rounded-xl bg-white p-3"
+              />
+            ) : null}
 
             <dl className="mt-8 space-y-3 text-left text-sm">
               <Row label="Name" value={receipt.full_name} />
