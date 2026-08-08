@@ -21,6 +21,11 @@ import {
 import { PageHeader } from "@/components/site/site-layout";
 import { Reveal } from "@/components/site/reveal";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  sendAdminRegistrationEmail,
+  sendUserVerificationEmail,
+  type RegistrationEmailData,
+} from "@/lib/emailjs";
 import { CATEGORIES, EVENT, TRACKS } from "@/lib/event-data";
 import { registrationSchema, type RegistrationInput } from "@/lib/registration-schema";
 import { submitRegistration } from "@/lib/registration.functions";
